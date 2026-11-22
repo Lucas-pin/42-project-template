@@ -15,7 +15,7 @@ help:
 	@echo "make template-info -> print repository template guidance"
 
 setup-gh:
-	@./dev-utils/scripts/setup-gh.sh
+	@bash dev-utils/scripts/setup-gh.sh
 	PATH="$(HOME)/.local/bin:$$PATH" $(MAKE) gh-auth
 
 gh-auth:
@@ -44,22 +44,22 @@ check-gh:
 	done
 
 repo: check-gh
-	@./dev-utils/scripts/new-repository.sh
+	@bash dev-utils/scripts/new-repository.sh
 
 project: check-gh
-	@./dev-utils/scripts/new-project.sh
+	@bash dev-utils/scripts/new-project.sh
 
 issue: check-gh
-	@./dev-utils/scripts/new-issue.sh
+	@bash dev-utils/scripts/new-issue.sh
 
 pr: check-gh
-	@./dev-utils/scripts/new-pull-request.sh
+	@bash dev-utils/scripts/new-pull-request.sh
 
 branch: check-gh
-	@./dev-utils/scripts/new-branch.sh
+	@bash dev-utils/scripts/new-branch.sh
 
 labels: check-gh
-	@./dev-utils/scripts/setup-labels.sh
+	@bash dev-utils/scripts/setup-labels.sh
 
 template-info:
 	@cat TEMPLATE.md
