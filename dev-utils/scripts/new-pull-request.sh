@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo="$(env -u GH_TOKEN gh repo view --json nameWithOwner --jq .nameWithOwner)" ||
+    { echo "Run this command from a GitHub repository." >&2; exit 1; }
+
+default_base="$(env -u GH_TOKEN gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)"
+read -r -p "Base branch [$default_base]: " base
+base="${base:-$default_base}"
+
+read -r -p "Create pull request draft? [y/N]: " draft
+args=(--base "$base" --fill)
+if [[ "$draft" =~ ^[yY]$ ]]; then
+    args+=(--draft)
+fi
+
+echo "Creating pull request in $repo..."
+env -u GH_TOKEN gh pr create "${args[@]}"
