@@ -1,69 +1,88 @@
 # 42 Project Template
 
-A reusable repository template for 42 projects. It provides a Makefile and GitHub CLI scripts for creating repositories, Projects v2 boards, issues, branches, labels, and pull requests.
+**Less GitHub setup, more time to build.**
 
-## Requirements
+42 Project Template aims to make the everyday work around 42 projects easier: creating repositories, organizing tasks and collaborating through GitHub, using familiar `make` commands.
 
-- Ubuntu or Debian
-- Git
-- GitHub CLI
-- A GitHub account
-- Python 3.10 or later (for the migrated workflows)
+> **Work in progress:** this project is in beta and is gradually moving from shell scripts to Python. Features may change, and most have not yet been extensively tested.
 
-The Python migration uses the standard library only and supports Python 3.10 for availability on 42 computers. A virtual environment with Poetry and a newer minimum Python version can be introduced later.
+This is a collaborative project: try it, use it for your projects, report problems and open a pull request with a fix, improvement or new feature. Whether you're learning or already comfortable with GitHub, contributions are welcome!
 
-## Setup
+## How it works
+
+The goal is to have one **central toolbox** to manage multiple projects. In the future, you'll be able to select a GitHub repository or a local clone before running a workflow.
+
+**Today, that selection is not implemented.** Run commands from the root of the repository you want to manage, using its copy of this Makefile and scripts. `make repo` currently creates a repository from this template, so the new repository also receives the toolbox files. Separating the toolbox from project files is planned.
+
+### Get started
+
+You need Git, a GitHub account, GitHub CLI and Python 3.10 or later for the migrated workflows. The `make setup-gh` installer targets Linux x86_64 and ARM64.
 
 ```bash
+git clone https://github.com/Lucas-pin/42-project-template.git
+cd 42-project-template
 make setup-gh
-```
-
-This installs or updates `gh` and runs the interactive `gh auth login` flow if needed. If `gh` is already installed, use `make gh-auth` or run `gh auth login` directly. Choose HTTPS or SSH for Git operations during login. Check or switch accounts with `gh auth status` and `gh auth switch`.
-
-`GH_TOKEN` and `GITHUB_TOKEN` are also supported and take precedence over stored credentials. Configure these tokens with the permissions needed for the operations you run; `gh` cannot update an environment token for you. Avoid committing tokens to your repository.
-
-GitHub Projects needs additional permissions. If a project command reports missing permissions and you use a stored `gh` OAuth login, run:
-
-```bash
-gh auth refresh --scopes project
-```
-
-For an environment token, update or replace the token with one that has the required Projects access instead. `make branch` works locally and does not require GitHub authentication.
-
-List available workflows:
-
-```bash
 make help
 ```
 
-## Workflows
+`make setup-gh` installs or updates `gh` and starts authentication if needed. If you already have `gh`, use `make gh-auth` or `gh auth login` instead. You can choose HTTPS or SSH for Git operations; use `gh auth status` or `gh auth switch` to inspect or change accounts.
 
-| Command | Purpose |
-| --- | --- |
-| `make setup-gh` | Install or update GitHub CLI and authenticate |
-| `make gh-auth` | Authenticate with GitHub CLI |
-| `make repo` | Create a GitHub repository from this template |
-| `make project` | Create a Projects v2 board for a user or organization |
-| `make issue` | Create an issue interactively using a template |
-| `make branch` | Create and switch to a feature branch |
-| `make labels` | Create standard repository labels |
-| `make pr` | Create a pull request using the PR template |
+The Python migration uses only the standard library, with Python 3.10 compatibility for 42 computers. A Poetry environment and a newer minimum version are possibilities for the future.
 
-Run these commands from the root of a GitHub repository. `make repo` creates a repository from `Lucas-pin/42-project-template` and can optionally clone it. The template's files, including its README, are included in the new repository.
+## What's available?
 
-`make project` defaults to the authenticated user but also accepts an organization or another user. You need permission to create projects for the selected owner. If linking the project to the current repository, GitHub CLI requires both to have the same owner; linking failures do not undo project creation.
+All workflows are **beta**. “Tested” below means focused automated tests with a simulated `gh`, not extensive testing against GitHub.
 
-`make issue` uses GitHub CLI's interactive template selection, including a blank issue option. Select labels through its metadata prompt. `make pr` starts its interactive description from `PULL_REQUEST_TEMPLATE.md`, asks for confirmation, and still supports draft PRs. GitHub CLI reads these templates from the repository on GitHub, so template changes must be available on its default branch.
+| Command | What it does | Implementation | Test status |
+| --- | --- | --- | --- |
+| `make setup-gh` | Install or update GitHub CLI and authenticate | Shell / Make | Beta: limited testing |
+| `make gh-auth` | Authenticate with GitHub CLI | Make | Beta: limited testing |
+| `make repo` | Create a repository from this template | Shell | Tested: simulated workflow |
+| `make project` | Create a GitHub Projects board | Shell | Beta: limited testing |
+| `make issue` | Create an issue using GitHub CLI | Shell | Beta: limited testing |
+| `make branch` | Create and switch to a local branch | Shell | Beta: limited testing |
+| `make labels` | Create a standard set of labels | Python | Beta: limited testing |
+| `make pr` | Create a pull request from the current branch | Shell | Beta: limited testing |
 
-## Migration and feature roadmap
+### Repository and board
 
-The tool is being migrated incrementally from shell scripts to Python. Existing `make` commands remain available during the transition; currently only `make labels` uses Python. Repository creation still copies this template, including its utilities: separating the central tool from project files is future work.
+- **`make repo`:** prompts for the name, visibility and description, creates the repository from `Lucas-pin/42-project-template`, then offers to clone it. The template's README, Makefile and scripts are included.
+- **`make project`:** creates a personal or organization-owned Projects v2 board and offers to link it to the current repository. You need permission to create the board; `gh` requires the board and repository to have the same owner when linking. A failed link does not undo board creation.
 
-1. **Foundation:** migrate existing workflows to Python with focused tests, preserving `gh` authentication, interactive prompts, and current commands. `make labels` is the first migrated workflow.
-2. **Central repository selection:** operate from one tool installation and select GitHub repositories for issues, PRs, and projects, or local clones for ordinary branches. Confirm the selected target before changes. Separate the tool from generated project files.
-3. **Guided project setup:** create a repository from a template, choose its owner and visibility, clone it, configure labels, and optionally create and link a project board.
-4. **Issue to branch to PR:** select or create an issue, optionally create a linked remote branch, and prepare a PR referencing the issue. For a linked branch, reuse an existing clone or ask for the default/custom destination and clone folder name, then check out the branch. Ordinary branches remain local until pushed.
-5. **Status and collaboration:** list issues and PRs, show branch status, open repositories and boards, and support selecting owners or organizations and assigning issues.
-6. **42 checks and automation:** add optional, project-specific Norminette, build, and test checks. Keep interactive menus while progressively adding `make` parameters for repeatable workflows.
+Projects require additional permissions. For a stored `gh` OAuth login, grant them with `gh auth refresh --scopes project` if needed. Environment tokens must be updated separately.
 
-Run the Python tests with `python3 -m unittest discover -s tests -p 'test_*.py'`. Existing shell tests can still be run with Bash.
+### Issues, branches and pull requests
+
+- **`make issue`:** opens GitHub CLI's interactive flow, where you can select an issue template or start blank and add labels through the metadata prompt.
+- **`make branch`:** creates and switches to a branch locally; it does not require GitHub authentication or publish the branch.
+- **`make pr`:** prompts for the base branch and whether the PR should be a draft, then uses the PR template in GitHub CLI's interactive flow. `gh` may also prompt to push the current branch.
+
+GitHub CLI reads issue and PR templates from the repository on GitHub, so template changes must be available on its default branch.
+
+### Labels and authentication
+
+- **`make labels`:** creates `bug`, `enhancement`, `documentation`, `testing` and `refactor`, skipping labels that already exist.
+- **Authentication:** `gh` also supports `GH_TOKEN` and `GITHUB_TOKEN`, which take precedence over stored credentials. Ensure the token has the permissions needed for your operations; never commit it to a repository.
+
+## Where we're heading
+
+1. **Migrate to Python:** move workflows incrementally, keep the current commands and add focused tests.
+2. **Central repository selection:** choose a GitHub repository for remote workflows or a local clone for branches; confirm the target before changes.
+3. **Guided project setup:** create and clone a repository, set up labels and optionally add a board.
+4. **Issue → branch → PR:** optionally create a linked remote branch, reuse or create a clone and prepare a PR referencing the issue. Ordinary branches remain local until pushed.
+5. **Status and collaboration:** list issues and PRs, inspect branch status, open resources and support assignments.
+6. **42 checks and automation:** offer optional Norminette, build and test checks, plus parameters for repeatable workflows.
+
+For a new clone in the linked-issue flow, the planned experience is to choose the configured default location or a custom path, name the clone folder and check out the branch.
+
+## Contributing
+
+Try a workflow, open an issue to share feedback, or submit a pull request. Small fixes, documentation improvements, tests and new ideas all help.
+
+The repository includes a simulated test for repository creation:
+
+```bash
+bash tests/new-repository.sh
+```
+
+Please describe what you changed and how you tested it in your pull request.
