@@ -26,11 +26,11 @@ make help
 | Command | Purpose |
 | --- | --- |
 | `make setup-gh` | Install or update GitHub CLI and authenticate |
-| `make repo` | Create a new GitHub repository |
+| `make repo` | Create a GitHub repository from this template |
 | `make project` | Create a Projects v2 board |
 | `make issue` | Create an issue interactively |
 | `make branch` | Create and switch to a feature branch |
 | `make labels` | Create standard repository labels |
 | `make pr` | Create a pull request |
 
-Run these commands from the root of a GitHub repository. `make repo` can create and optionally clone a new repository.
+Run these commands from the root of a GitHub repository. `make repo` creates a repository from `Lucas-pin/42-project-template` and can optionally clone it. The template's files, including its README, are included in the new repository.

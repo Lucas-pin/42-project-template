@@ -10,20 +10,14 @@ visibility="${visibility:-public}"
 
 read -r -p "Description: " description
 
-args=("$repo_name" "--$visibility")
+args=("$repo_name" "--$visibility" --template "Lucas-pin/42-project-template")
 [[ -n "$description" ]] && args+=("--description" "$description")
 
-read -r -p "Initialize with a README? [Y/n]: " add_readme
-if [[ ! "$add_readme" =~ ^[nN]$ ]]; then
-    args+=("--add-readme")
-fi
-
-echo "Creating $repo_name..."
-env -u GH_TOKEN gh repo create "${args[@]}"
-echo "Creating with template sources: https://github.com/$(env -u GH_TOKEN gh api user --jq .login)/$repo_name"
+echo "Creating $repo_name from Lucas-pin/42-project-template..."
+repo_url="$(env -u GH_TOKEN gh repo create "${args[@]}")"
+echo "$repo_url"
 
 read -r -p "Clone the new repository now? [Y/n]: " clone_repo
 if [[ ! "$clone_repo" =~ ^[nN]$ ]]; then
-    owner="$(env -u GH_TOKEN gh api user --jq .login)"
-    env -u GH_TOKEN gh repo clone "$owner/$repo_name"
+    env -u GH_TOKEN gh repo clone "${repo_url#https://github.com/}"
 fi

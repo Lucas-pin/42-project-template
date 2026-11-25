@@ -11,4 +11,4 @@ make setup-gh
 make repo
 ```
 
-The generated repository can use this template as a starting point. Customize the Makefile and scripts for the project's language and build system.
+`make repo` creates a repository from `Lucas-pin/42-project-template` and can optionally clone it. Customize the copied Makefile and scripts for the project's language and build system.
