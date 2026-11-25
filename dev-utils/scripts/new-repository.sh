@@ -14,10 +14,10 @@ args=("$repo_name" "--$visibility" --template "Lucas-pin/42-project-template")
 [[ -n "$description" ]] && args+=("--description" "$description")
 
 echo "Creating $repo_name from Lucas-pin/42-project-template..."
-repo_url="$(env -u GH_TOKEN gh repo create "${args[@]}")"
+repo_url="$(gh repo create "${args[@]}")"
 echo "$repo_url"
 
 read -r -p "Clone the new repository now? [Y/n]: " clone_repo
 if [[ ! "$clone_repo" =~ ^[nN]$ ]]; then
-    env -u GH_TOKEN gh repo clone "${repo_url#https://github.com/}"
+    gh repo clone "${repo_url#https://github.com/}"
 fi

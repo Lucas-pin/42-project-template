@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo="$(env -u GH_TOKEN gh repo view --json nameWithOwner --jq .nameWithOwner)" ||
+repo="$(gh repo view --json nameWithOwner --jq .nameWithOwner)" ||
     { echo "Run this command from a GitHub repository." >&2; exit 1; }
 
 read -r -p "Issue title: " title
 [[ -n "${title//[[:space:]]/}" ]] || { echo "Issue title is required." >&2; exit 1; }
 
-labels_raw="$(env -u GH_TOKEN gh label list --limit 200 --json name --jq '.[].name')"
+labels_raw="$(gh label list --limit 200 --json name --jq '.[].name')"
 if [[ -n "$labels_raw" ]]; then
     mapfile -t labels <<<"$labels_raw"
     PS3="Label: "
@@ -39,7 +39,7 @@ args=(--title "$title" --body-file "$body_file")
 
 read -r -p "Create issue in $repo? [y/N]: " confirm
 if [[ "$confirm" =~ ^[yY]$ ]]; then
-    env -u GH_TOKEN gh issue create "${args[@]}"
+    gh issue create "${args[@]}"
 else
     echo "Issue canceled."
 fi

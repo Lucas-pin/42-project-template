@@ -7,10 +7,10 @@ create_label() {
     local name="$1"
     local color="$2"
     local description="$3"
-    if env -u GH_TOKEN gh label list --json name --jq '.[].name' | grep -Fxq "$name"; then
+    if gh label list --json name --jq '.[].name' | grep -Fxq "$name"; then
         echo "Label already exists: $name"
     else
-        env -u GH_TOKEN gh label create "$name" --color "$color" --description "$description"
+        gh label create "$name" --color "$color" --description "$description"
     fi
 }
 

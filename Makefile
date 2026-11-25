@@ -5,7 +5,7 @@ export PATH := $(HOME)/.local/bin:$(PATH)
 
 help:
 	@echo "make setup-gh    -> install/update GitHub CLI and authenticate"
-	@echo "make gh-auth     -> authenticate and verify repository/project scopes"
+	@echo "make gh-auth     -> authenticate with GitHub CLI"
 	@echo "make repo        -> create a new GitHub repository"
 	@echo "make project     -> create a GitHub Projects v2 board"
 	@echo "make issue       -> create an issue interactively"
@@ -19,35 +19,29 @@ setup-gh:
 	PATH="$(HOME)/.local/bin:$$PATH" $(MAKE) gh-auth
 
 gh-auth:
-	@if ! gh auth status >/dev/null 2>&1; then \
-		echo "Authenticating gh with repo, project, and workflow scopes..."; \
-		gh auth login --scopes repo,project,workflow; \
+	@command -v gh >/dev/null || { echo "gh is missing; run 'make setup-gh'." >&2; exit 1; }
+	@if gh auth status --active >/dev/null 2>&1; then \
+		echo "gh is already authenticated."; \
 	else \
-		status="$$(gh auth status 2>&1)"; \
-		if ! printf '%s\n' "$$status" | grep "Token scopes" | grep -q "'repo'" \
-			|| ! printf '%s\n' "$$status" | grep "Token scopes" | grep -q "'project'" \
-			|| ! printf '%s\n' "$$status" | grep "Token scopes" | grep -q "'workflow'"; then \
-			echo "Updating gh scopes to repo,project,workflow..."; \
-			gh auth refresh --scopes repo,project,workflow; \
-		else \
-			echo "gh is already authenticated with the required scopes."; \
-		fi; \
+		gh auth login; \
 	fi
 
 check-gh:
-	@command -v gh >/dev/null || { echo "gh is missing; run 'make setup-gh'."; exit 1; }
-	@gh auth status >/dev/null 2>&1 || { echo "gh is not authenticated; run 'make setup-gh'."; exit 1; }
-	@status="$$(gh auth status 2>&1)"; \
-	for scope in repo project workflow; do \
-		printf '%s\n' "$$status" | grep "Token scopes" | grep -q "'$$scope'" \
-			|| { echo "Missing the $$scope scope; run 'make setup-gh'."; exit 1; }; \
-	done
+	@command -v gh >/dev/null || { echo "gh is missing; run 'make setup-gh'." >&2; exit 1; }
+	@if status="$$(gh auth status --active 2>&1)"; then :; else \
+		printf '%s\n' "$$status" >&2; \
+		echo "Check your gh credentials or run 'make gh-auth'." >&2; \
+		exit 1; \
+	fi
 
 repo: check-gh
 	@bash dev-utils/scripts/new-repository.sh
 
 project: check-gh
-	@bash dev-utils/scripts/new-project.sh
+	@bash dev-utils/scripts/new-project.sh || { \
+		echo "If project permissions are missing, see the authentication instructions in README.md." >&2; \
+		exit 1; \
+	}
 
 issue: check-gh
 	@bash dev-utils/scripts/new-issue.sh
@@ -55,7 +49,7 @@ issue: check-gh
 pr: check-gh
 	@bash dev-utils/scripts/new-pull-request.sh
 
-branch: check-gh
+branch:
 	@bash dev-utils/scripts/new-branch.sh
 
 labels: check-gh
