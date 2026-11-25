@@ -53,7 +53,7 @@ branch:
 	@bash dev-utils/scripts/new-branch.sh
 
 labels: check-gh
-	@bash dev-utils/scripts/setup-labels.sh
+	@python3 dev-utils/scripts/setup_labels.py
 
 template-info:
 	@cat TEMPLATE.md

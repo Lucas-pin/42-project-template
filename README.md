@@ -8,6 +8,9 @@ A reusable repository template for 42 projects. It provides a Makefile and GitHu
 - Git
 - GitHub CLI
 - A GitHub account
+- Python 3.10 or later (for the migrated workflows)
+
+The Python migration uses the standard library only and supports Python 3.10 for availability on 42 computers. A virtual environment with Poetry and a newer minimum Python version can be introduced later.
 
 ## Setup
 
@@ -51,3 +54,16 @@ Run these commands from the root of a GitHub repository. `make repo` creates a r
 `make project` defaults to the authenticated user but also accepts an organization or another user. You need permission to create projects for the selected owner. If linking the project to the current repository, GitHub CLI requires both to have the same owner; linking failures do not undo project creation.
 
 `make issue` uses GitHub CLI's interactive template selection, including a blank issue option. Select labels through its metadata prompt. `make pr` starts its interactive description from `PULL_REQUEST_TEMPLATE.md`, asks for confirmation, and still supports draft PRs. GitHub CLI reads these templates from the repository on GitHub, so template changes must be available on its default branch.
+
+## Migration and feature roadmap
+
+The tool is being migrated incrementally from shell scripts to Python. Existing `make` commands remain available during the transition; currently only `make labels` uses Python. Repository creation still copies this template, including its utilities: separating the central tool from project files is future work.
+
+1. **Foundation:** migrate existing workflows to Python with focused tests, preserving `gh` authentication, interactive prompts, and current commands. `make labels` is the first migrated workflow.
+2. **Central repository selection:** operate from one tool installation and select GitHub repositories for issues, PRs, and projects, or local clones for ordinary branches. Confirm the selected target before changes. Separate the tool from generated project files.
+3. **Guided project setup:** create a repository from a template, choose its owner and visibility, clone it, configure labels, and optionally create and link a project board.
+4. **Issue to branch to PR:** select or create an issue, optionally create a linked remote branch, and prepare a PR referencing the issue. For a linked branch, reuse an existing clone or ask for the default/custom destination and clone folder name, then check out the branch. Ordinary branches remain local until pushed.
+5. **Status and collaboration:** list issues and PRs, show branch status, open repositories and boards, and support selecting owners or organizations and assigning issues.
+6. **42 checks and automation:** add optional, project-specific Norminette, build, and test checks. Keep interactive menus while progressively adding `make` parameters for repeatable workflows.
+
+Run the Python tests with `python3 -m unittest discover -s tests -p 'test_*.py'`. Existing shell tests can still be run with Bash.
