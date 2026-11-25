@@ -40,10 +40,14 @@ make help
 | `make setup-gh` | Install or update GitHub CLI and authenticate |
 | `make gh-auth` | Authenticate with GitHub CLI |
 | `make repo` | Create a GitHub repository from this template |
-| `make project` | Create a Projects v2 board |
-| `make issue` | Create an issue interactively |
+| `make project` | Create a Projects v2 board for a user or organization |
+| `make issue` | Create an issue interactively using a template |
 | `make branch` | Create and switch to a feature branch |
 | `make labels` | Create standard repository labels |
-| `make pr` | Create a pull request |
+| `make pr` | Create a pull request using the PR template |
 
 Run these commands from the root of a GitHub repository. `make repo` creates a repository from `Lucas-pin/42-project-template` and can optionally clone it. The template's files, including its README, are included in the new repository.
+
+`make project` defaults to the authenticated user but also accepts an organization or another user. You need permission to create projects for the selected owner. If linking the project to the current repository, GitHub CLI requires both to have the same owner; linking failures do not undo project creation.
+
+`make issue` uses GitHub CLI's interactive template selection, including a blank issue option. Select labels through its metadata prompt. `make pr` starts its interactive description from `PULL_REQUEST_TEMPLATE.md`, asks for confirmation, and still supports draft PRs. GitHub CLI reads these templates from the repository on GitHub, so template changes must be available on its default branch.

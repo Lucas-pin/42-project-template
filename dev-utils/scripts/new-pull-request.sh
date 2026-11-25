@@ -9,7 +9,7 @@ read -r -p "Base branch [$default_base]: " base
 base="${base:-$default_base}"
 
 read -r -p "Create pull request draft? [y/N]: " draft
-args=(--base "$base" --fill)
+args=(--base "$base" --template "PULL_REQUEST_TEMPLATE.md")
 if [[ "$draft" =~ ^[yY]$ ]]; then
     args+=(--draft)
 fi
