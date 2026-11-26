@@ -10,7 +10,7 @@ import termios
 from urllib.parse import urlsplit
 
 from create_project_view import Project, choose_project, get_json, parse_project
-from select_repository import read_prompt
+from select_repository import default_projects_directory, read_prompt
 
 
 PROJECTS_QUERY = """
@@ -164,7 +164,7 @@ def create_linked_branch(url: str) -> str:
 
 
 def clone_branch(repository: str, branch: str) -> None:
-    default = os.environ.get("PROJECTS_DIR", str(Path.home() / "42-projects"))
+    default = default_projects_directory()
     directory = Path(read_prompt(f"Clone directory [{default}]: ") or default).expanduser()
     folder = read_prompt(f"Clone folder name [{repository.split('/')[-1]}]: ") or repository.split("/")[-1]
     if folder in {".", ".."} or Path(folder).name != folder:

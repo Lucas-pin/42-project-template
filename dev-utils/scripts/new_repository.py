@@ -1,7 +1,8 @@
 import subprocess
 import sys
+from pathlib import Path
 
-from select_repository import read_prompt
+from select_repository import default_projects_directory, read_prompt
 
 
 TEMPLATE = "Lucas-pin/42-project-template"
@@ -20,6 +21,20 @@ def create_repository(name: str, visibility: str, description: str) -> str:
     return url
 
 
+def clone_repository(url: str) -> None:
+    default = default_projects_directory()
+    if not default:
+        raise ValueError("PROJECTS_DIR must not be empty.")
+    directory = Path(default).expanduser()
+    directory.mkdir(parents=True, exist_ok=True)
+    print(f"Cloning into {directory}...", flush=True)
+    subprocess.run(
+        ["gh", "repo", "clone", url.removeprefix("https://github.com/")],
+        cwd=directory,
+        check=True,
+    )
+
+
 def main() -> int:
     url = None
     try:
@@ -32,7 +47,7 @@ def main() -> int:
         description = read_prompt("Description: ", preserve_whitespace=True)
         url = create_repository(name, visibility, description)
         if read_prompt("Clone the new repository now? [Y/n]: ", preserve_whitespace=True).lower() != "n":
-            subprocess.run(["gh", "repo", "clone", url.removeprefix("https://github.com/")], check=True)
+            clone_repository(url)
     except (EOFError, KeyboardInterrupt):
         print("\nCanceled." + (f" Repository already created: {url}" if url else ""), file=sys.stderr)
         return 1

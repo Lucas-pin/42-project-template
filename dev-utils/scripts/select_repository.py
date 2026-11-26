@@ -7,6 +7,10 @@ import sys
 SCRIPTS = Path(__file__).resolve().parent
 
 
+def default_projects_directory() -> str:
+    return os.environ.get("PROJECTS_DIR", str(Path.home() / "42-projects"))
+
+
 def read_prompt(message: str, *, preserve_whitespace: bool = False) -> str:
     print(message, end="", flush=True)
     data = bytearray()
@@ -76,7 +80,7 @@ def repository_root(path: Path) -> Path:
 
 
 def select_local() -> Path:
-    default = os.environ.get("PROJECTS_DIR", str(Path.home() / "42-projects"))
+    default = default_projects_directory()
     directory = Path(read_prompt(f"Projects directory [{default}]: ") or default).expanduser()
     if not directory.is_dir():
         raise ValueError(f"Projects directory does not exist: {directory}")

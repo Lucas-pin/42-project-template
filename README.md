@@ -49,7 +49,7 @@ All workflows are **beta**. “Tested” below means focused automated tests wit
 
 ### Repository and board
 
-- **`make repo`:** prompts for the name, visibility and description, creates the repository from `Lucas-pin/42-project-template`, then offers to clone it. The template's README, Makefile and scripts are included.
+- **`make repo`:** prompts for the name, visibility and description, creates the repository from `Lucas-pin/42-project-template`, then offers to clone it under `PROJECTS_DIR` (default: `~/42-projects`). The directory is created if needed. The template's README, Makefile and scripts are included.
 - **`make project`:** selects a repository, creates a Projects v2 project under its user or organization and links it automatically. Choose the initial view: **Board** (default), **Table** or **Roadmap**. You need permission to create and link the project; if linking or setting the view fails, the project is not deleted.
 - **`make view-project`:** choose a user or organization (defaults to your account), select a project with the arrow keys and Enter, and add a named Board, Table or Roadmap view. Press `q` to cancel. The menu shows up to 1,000 open projects; you can also enter a project number manually. Without an interactive terminal, select the menu position, not the GitHub project number. Existing views remain unchanged.
 
