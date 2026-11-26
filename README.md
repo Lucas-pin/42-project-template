@@ -10,11 +10,11 @@ This is a collaborative project: try it, use it for your projects, report proble
 
 ## How it works
 
-Run `make` from this **central toolbox** to manage multiple projects. Issues and boards start by selecting a GitHub repository; branches start by selecting a local clone. Pull requests select both the GitHub target and a local clone containing the working branch. Each workflow shows the selection and asks for confirmation.
+Run `make` from this **central toolbox** to manage multiple projects. Issues and boards start by selecting a GitHub repository; branches start by selecting a local clone. Pull requests select both the GitHub target and a local clone. Each workflow shows the selection and asks for confirmation.
 
 `make labels` still operates on the repository containing the Makefile. `make repo` creates a repository from this template, so the new repository also receives the toolbox files. Centralizing the remaining workflows and separating toolbox files from generated projects are planned.
 
-For local clones, the default directory is `~/42-projects`. Set `PROJECTS_DIR` to change it, for example `export PROJECTS_DIR="$HOME/projects"`. Local repository selection requires an existing directory and lists its immediate Git repositories. The issue workflow can also create a new clone in the default or a custom directory.
+For local clones, the default directory is `~/42-projects`. Set `PROJECTS_DIR` to change it, for example `export PROJECTS_DIR="$HOME/projects"`. Local repository selection requires an existing directory and searches it and its subdirectories for Git repositories and worktrees. It does not traverse symlinked directories. The issue workflow can also create a new clone in the default or a custom directory.
 
 ### Get started
 
@@ -45,7 +45,7 @@ All workflows are **beta**. “Tested” below means focused automated tests wit
 | `make issue` | Create an issue and optionally add it to a project, create a branch and clone | Python | Tested: simulated workflow |
 | `make branch` | Select a local clone and create a branch | Python / Shell | Tested: local Git |
 | `make labels` | Create a standard set of labels | Python | Beta: limited testing |
-| `make pr` | Select a GitHub repository and local clone to create a PR | Python / Shell | Tested: simulated workflow |
+| `make pr` | Select a GitHub repository, clone and branches to create a PR | Python | Tested: simulated workflow |
 
 ### Repository and board
 
@@ -69,7 +69,7 @@ Projects require additional permissions. For a stored `gh` OAuth login, grant th
 
 - **`make issue`:** opens GitHub CLI's interactive flow, including templates and labels. After creating the issue, optionally add it to an open Project v2 linked to that repository. You can also create a named remote branch linked to the issue and optionally clone the repository with that branch checked out. Choose a clone directory and folder name; existing destinations are not overwritten. If a later step fails, the issue and any completed remote changes remain in GitHub.
 - **`make branch`:** creates and switches to a branch locally; it does not require GitHub authentication or publish the branch.
-- **`make pr`:** select the target repository and a relevant local clone, then choose the base branch and whether the PR should be a draft. GitHub CLI uses the PR template and may also prompt to push the current branch.
+- **`make pr`:** select the target GitHub repository and a relevant local clone, then select the source branch from local and tracked remote branches and the target branch from GitHub. Enter accepts the current source and the repository's default target. Switching source branches requires a clean working tree; remote selections create a local tracking branch. The selected branch remains checked out even if PR creation fails. Choose whether the PR should be a draft. GitHub CLI uses the PR template and may also prompt to push the source branch.
 
 The GitHub repository menu lists repositories accessible to the authenticated user and includes manual `OWNER/REPO` entry. Listing and validation failures stop the workflow; no changes are made before confirmation.
 

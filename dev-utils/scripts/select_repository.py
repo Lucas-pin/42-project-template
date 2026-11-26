@@ -24,11 +24,13 @@ def read_prompt(message: str, *, preserve_whitespace: bool = False) -> str:
     return answer if preserve_whitespace else answer.strip()
 
 
-def choose(options: list[str], prompt: str) -> str:
+def choose(options: list[str], prompt: str, default: str | None = None) -> str:
     for index, option in enumerate(options, 1):
         print(f"{index}. {option}")
     while True:
         answer = read_prompt(prompt)
+        if not answer and default is not None:
+            return default
         if answer.isdecimal() and 1 <= int(answer) <= len(options):
             return options[int(answer) - 1]
         print("Please enter a valid number.")
@@ -78,12 +80,21 @@ def select_local() -> Path:
     directory = Path(read_prompt(f"Projects directory [{default}]: ") or default).expanduser()
     if not directory.is_dir():
         raise ValueError(f"Projects directory does not exist: {directory}")
-    candidates = []
-    for path in sorted(directory.iterdir(), key=lambda item: item.name.casefold()):
-        if path.is_dir() and (path / ".git").exists():
-            candidates.append(str(path.resolve()))
+    candidates = set()
+
+    def raise_walk_error(error: OSError) -> None:
+        raise error
+
+    for root, dirs, files in os.walk(directory, onerror=raise_walk_error):
+        if ".git" in dirs or ".git" in files:
+            candidates.add(str(Path(root).resolve()))
+        dirs[:] = [name for name in dirs if name != ".git"]
+        for name in dirs:
+            path = Path(root) / name
+            if path.is_symlink() and (path / ".git").exists():
+                candidates.add(str(path.resolve()))
     manual = "Enter a repository path manually"
-    selected = choose([*candidates, manual], "Local repository: ")
+    selected = choose([*sorted(candidates, key=str.casefold), manual], "Local repository: ")
     if selected == manual:
         selected = read_prompt("Repository path: ")
         if not selected:
@@ -112,10 +123,10 @@ def main() -> int:
         script = {
             "issue": "new_issue.py",
             "project": "new_project.py",
-            "pr": "new-pull-request.sh",
+            "pr": "new_pull_request.py",
             "branch": "new-branch.sh",
         }[action]
-        interpreter = sys.executable if action in {"issue", "project"} else "bash"
+        interpreter = sys.executable if action in {"issue", "project", "pr"} else "bash"
         subprocess.run([interpreter, str(SCRIPTS / script)], cwd=local, env=env, check=True)
     except (EOFError, KeyboardInterrupt):
         print("\nCanceled.", file=sys.stderr)
