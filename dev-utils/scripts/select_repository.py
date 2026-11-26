@@ -7,7 +7,7 @@ import sys
 SCRIPTS = Path(__file__).resolve().parent
 
 
-def read_prompt(message: str) -> str:
+def read_prompt(message: str, *, preserve_whitespace: bool = False) -> str:
     print(message, end="", flush=True)
     data = bytearray()
     # Do not buffer input meant for the interactive gh and git subprocesses.
@@ -20,7 +20,8 @@ def read_prompt(message: str) -> str:
         if char == b"\n":
             break
         data.extend(char)
-    return data.decode(sys.stdin.encoding or "utf-8").strip()
+    answer = data.decode(sys.stdin.encoding or "utf-8")
+    return answer if preserve_whitespace else answer.strip()
 
 
 def choose(options: list[str], prompt: str) -> str:
@@ -110,11 +111,12 @@ def main() -> int:
             env["GH_REPO"] = remote
         script = {
             "issue": "new-issue.sh",
-            "project": "new-project.sh",
+            "project": "new_project.py",
             "pr": "new-pull-request.sh",
             "branch": "new-branch.sh",
         }[action]
-        subprocess.run(["bash", str(SCRIPTS / script)], cwd=local, env=env, check=True)
+        interpreter = sys.executable if action == "project" else "bash"
+        subprocess.run([interpreter, str(SCRIPTS / script)], cwd=local, env=env, check=True)
     except (EOFError, KeyboardInterrupt):
         print("\nCanceled.", file=sys.stderr)
         return 1
