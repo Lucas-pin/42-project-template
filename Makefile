@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help setup-gh gh-auth check-gh repo project issue pr branch labels template-info
+.PHONY: help setup-gh gh-auth check-gh repo project view-project issue pr branch labels template-info
 
 export PATH := $(HOME)/.local/bin:$(PATH)
 
@@ -8,6 +8,7 @@ help:
 	@echo "make gh-auth     -> authenticate with GitHub CLI"
 	@echo "make repo        -> create a new GitHub repository"
 	@echo "make project     -> create a GitHub Projects v2 board"
+	@echo "make view-project -> add a view to an existing GitHub project"
 	@echo "make issue       -> create an issue interactively"
 	@echo "make pr          -> create a pull request"
 	@echo "make branch      -> create and switch to a feature branch"
@@ -38,19 +39,22 @@ repo: check-gh
 	@bash dev-utils/scripts/new-repository.sh
 
 project: check-gh
-	@bash dev-utils/scripts/new-project.sh || { \
+	@python3 dev-utils/scripts/select_repository.py project || { \
 		echo "If project permissions are missing, see the authentication instructions in README.md." >&2; \
 		exit 1; \
 	}
 
+view-project: check-gh
+	@python3 dev-utils/scripts/create_project_view.py
+
 issue: check-gh
-	@bash dev-utils/scripts/new-issue.sh
+	@python3 dev-utils/scripts/select_repository.py issue
 
 pr: check-gh
-	@bash dev-utils/scripts/new-pull-request.sh
+	@python3 dev-utils/scripts/select_repository.py pr
 
 branch:
-	@bash dev-utils/scripts/new-branch.sh
+	@python3 dev-utils/scripts/select_repository.py branch
 
 labels: check-gh
 	@python3 dev-utils/scripts/setup_labels.py
