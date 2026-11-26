@@ -4,7 +4,7 @@
 
 42 Project Template aims to make the everyday work around 42 projects easier: creating repositories, organizing tasks and collaborating through GitHub, using familiar `make` commands.
 
-> **Work in progress:** this project is in beta and is gradually moving from shell scripts to Python. Features may change, and most have not yet been extensively tested.
+> **Work in progress:** this project is in beta. The workflow scripts have been migrated from shell to Python, but features may change and most have not yet been extensively tested.
 
 This is a collaborative project: try it, use it for your projects, report problems and open a pull request with a fix, improvement or new feature. Whether you're learning or already comfortable with GitHub, contributions are welcome!
 
@@ -18,7 +18,7 @@ For local clones, the default directory is `~/42-projects`. Set `PROJECTS_DIR` t
 
 ### Get started
 
-You need Git, a GitHub account, GitHub CLI and Python 3.10 or later for the migrated workflows. The `make setup-gh` installer targets Linux x86_64 and ARM64.
+You need Git, a GitHub account, GitHub CLI and Python 3.10 or later. The `make setup-gh` installer targets Linux x86_64 and ARM64.
 
 ```bash
 git clone https://github.com/Lucas-pin/42-project-template.git
@@ -27,7 +27,7 @@ make setup-gh
 make help
 ```
 
-`make setup-gh` installs or updates `gh` and starts authentication if needed. If you already have `gh`, use `make gh-auth` or `gh auth login` instead. You can choose HTTPS or SSH for Git operations; use `gh auth status` or `gh auth switch` to inspect or change accounts.
+`make setup-gh` downloads the latest `gh` into `~/.local/bin/gh` and starts authentication if needed. If you already have `gh`, use `make gh-auth` or `gh auth login` instead. You can choose HTTPS or SSH for Git operations; use `gh auth status` or `gh auth switch` to inspect or change accounts.
 
 The Python migration uses only the standard library, with Python 3.10 compatibility for 42 computers. A Poetry environment and a newer minimum version are possibilities for the future.
 
@@ -37,13 +37,13 @@ All workflows are **beta**. “Tested” below means focused automated tests wit
 
 | Command | What it does | Implementation | Test status |
 | --- | --- | --- | --- |
-| `make setup-gh` | Install or update GitHub CLI and authenticate | Shell / Make | Beta: limited testing |
+| `make setup-gh` | Install or update GitHub CLI and authenticate | Python / Make | Beta: limited testing |
 | `make gh-auth` | Authenticate with GitHub CLI | Make | Beta: limited testing |
-| `make repo` | Create a repository from this template | Shell | Tested: simulated workflow |
+| `make repo` | Create a repository from this template | Python | Tested: simulated workflow |
 | `make project` | Select a GitHub repository and create a Projects board | Python | Tested: simulated workflow |
 | `make view-project` | Add a view to an existing project | Python | Tested: simulated workflow |
 | `make issue` | Create an issue and optionally add it to a project, create a branch and clone | Python | Tested: simulated workflow |
-| `make branch` | Select a local clone and create a branch | Python / Shell | Tested: local Git |
+| `make branch` | Select a local clone and create a branch | Python | Tested: local Git |
 | `make labels` | Create a standard set of labels | Python | Beta: limited testing |
 | `make pr` | Select a GitHub repository, clone and branches to create a PR | Python | Tested: simulated workflow |
 
@@ -82,7 +82,7 @@ GitHub CLI reads issue and PR templates from the repository on GitHub, so templa
 
 ## Where we're heading
 
-1. **Migrate to Python:** move workflows incrementally, keep the current commands and add focused tests.
+1. **Python migration:** completed for workflow scripts; continue adding focused tests.
 2. **Central repository selection:** implemented for issues, boards, PRs and local branches; extend it to the remaining workflows.
 3. **Guided project setup:** create and clone a repository, set up labels and optionally add a board.
 4. **Issue → branch → PR:** create a linked remote branch and optionally clone it; reuse an existing clone and prepare a PR referencing the issue in a future step. Ordinary branches remain local until pushed.

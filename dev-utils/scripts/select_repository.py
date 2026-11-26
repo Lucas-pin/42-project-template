@@ -124,10 +124,9 @@ def main() -> int:
             "issue": "new_issue.py",
             "project": "new_project.py",
             "pr": "new_pull_request.py",
-            "branch": "new-branch.sh",
+            "branch": "new_branch.py",
         }[action]
-        interpreter = sys.executable if action in {"issue", "project", "pr"} else "bash"
-        subprocess.run([interpreter, str(SCRIPTS / script)], cwd=local, env=env, check=True)
+        subprocess.run([sys.executable, str(SCRIPTS / script)], cwd=local, env=env, check=True)
     except (EOFError, KeyboardInterrupt):
         print("\nCanceled.", file=sys.stderr)
         return 1

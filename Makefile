@@ -16,7 +16,7 @@ help:
 	@echo "make template-info -> print repository template guidance"
 
 setup-gh:
-	@bash dev-utils/scripts/setup-gh.sh
+	@python3 dev-utils/scripts/setup_gh.py
 	PATH="$(HOME)/.local/bin:$$PATH" $(MAKE) gh-auth
 
 gh-auth:
@@ -36,7 +36,7 @@ check-gh:
 	fi
 
 repo: check-gh
-	@bash dev-utils/scripts/new-repository.sh
+	@python3 dev-utils/scripts/new_repository.py
 
 project: check-gh
 	@python3 dev-utils/scripts/select_repository.py project || { \
