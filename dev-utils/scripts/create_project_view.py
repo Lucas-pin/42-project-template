@@ -8,6 +8,7 @@ import tty
 import unicodedata
 from dataclasses import dataclass
 
+from project_layout import LAYOUTS, prompt_view_layout
 from select_repository import choose, read_prompt
 
 
@@ -141,12 +142,7 @@ def main() -> int:
         name = read_prompt("View name: ")
         if not name:
             raise ValueError("View name is required.")
-        layouts = {"board": "BOARD_LAYOUT", "table": "TABLE_LAYOUT", "roadmap": "ROADMAP_LAYOUT"}
-        while True:
-            layout = (read_prompt("View layout (board/table/roadmap) [board]: ") or "board").lower()
-            if layout in layouts:
-                break
-            print("Choose board, table, or roadmap.")
+        layout = prompt_view_layout()
 
         print(f"Project: {project.title} (#{project.number}) - {project.url}")
         print(f"New view: {name} ({layout})")
@@ -162,7 +158,7 @@ def main() -> int:
                 "{ projectV2View { id name layout project { id } } } }",
                 "-f", f"projectId={project.id}",
                 "-f", f"name={name}",
-                "-f", f"layout={layouts[layout]}",
+                "-f", f"layout={LAYOUTS[layout]}",
                 "--jq", ".data.createProjectV2View.projectV2View",
             ])
         except (subprocess.CalledProcessError, json.JSONDecodeError):
@@ -172,7 +168,7 @@ def main() -> int:
             not isinstance(data, dict)
             or not data.get("id")
             or data.get("name") != name
-            or data.get("layout") != layouts[layout]
+            or data.get("layout") != LAYOUTS[layout]
             or not isinstance(data.get("project"), dict)
             or data["project"].get("id") != project.id
         ):

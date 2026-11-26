@@ -40,7 +40,7 @@ All workflows are **beta**. “Tested” below means focused automated tests wit
 | `make setup-gh` | Install or update GitHub CLI and authenticate | Shell / Make | Beta: limited testing |
 | `make gh-auth` | Authenticate with GitHub CLI | Make | Beta: limited testing |
 | `make repo` | Create a repository from this template | Shell | Tested: simulated workflow |
-| `make project` | Select a GitHub repository and create a Projects board | Python / Shell | Tested: simulated workflow |
+| `make project` | Select a GitHub repository and create a Projects board | Python | Tested: simulated workflow |
 | `make view-project` | Add a view to an existing project | Python | Tested: simulated workflow |
 | `make issue` | Select a GitHub repository and create an issue | Python / Shell | Tested: simulated workflow |
 | `make branch` | Select a local clone and create a branch | Python / Shell | Tested: local Git |
