@@ -10,9 +10,11 @@ This is a collaborative project: try it, use it for your projects, report proble
 
 ## How it works
 
-The goal is to have one **central toolbox** to manage multiple projects. In the future, you'll be able to select a GitHub repository or a local clone before running a workflow.
+Run `make` from this **central toolbox** to manage multiple projects. Issues and boards start by selecting a GitHub repository; branches start by selecting a local clone. Pull requests select both the GitHub target and a local clone containing the working branch. Each workflow shows the selection and asks for confirmation.
 
-**Today, that selection is not implemented.** Run commands from the root of the repository you want to manage, using its copy of this Makefile and scripts. `make repo` currently creates a repository from this template, so the new repository also receives the toolbox files. Separating the toolbox from project files is planned.
+`make labels` still operates on the repository containing the Makefile. `make repo` creates a repository from this template, so the new repository also receives the toolbox files. Centralizing the remaining workflows and separating toolbox files from generated projects are planned.
+
+For local clones, the default search directory is `~/42-projects`. Set `PROJECTS_DIR` to change it, for example `export PROJECTS_DIR="$HOME/projects"`. At each prompt you can accept that directory or enter another existing directory. The menu lists its immediate Git repositories and offers manual path entry; it does not clone or create directories.
 
 ### Get started
 
@@ -38,16 +40,28 @@ All workflows are **beta**. “Tested” below means focused automated tests wit
 | `make setup-gh` | Install or update GitHub CLI and authenticate | Shell / Make | Beta: limited testing |
 | `make gh-auth` | Authenticate with GitHub CLI | Make | Beta: limited testing |
 | `make repo` | Create a repository from this template | Shell | Tested: simulated workflow |
-| `make project` | Create a GitHub Projects board | Shell | Beta: limited testing |
-| `make issue` | Create an issue using GitHub CLI | Shell | Beta: limited testing |
-| `make branch` | Create and switch to a local branch | Shell | Beta: limited testing |
+| `make project` | Select a GitHub repository and create a Projects board | Python / Shell | Tested: simulated workflow |
+| `make view-project` | Add a view to an existing project | Python | Tested: simulated workflow |
+| `make issue` | Select a GitHub repository and create an issue | Python / Shell | Tested: simulated workflow |
+| `make branch` | Select a local clone and create a branch | Python / Shell | Tested: local Git |
 | `make labels` | Create a standard set of labels | Python | Beta: limited testing |
-| `make pr` | Create a pull request from the current branch | Shell | Beta: limited testing |
+| `make pr` | Select a GitHub repository and local clone to create a PR | Python / Shell | Tested: simulated workflow |
 
 ### Repository and board
 
 - **`make repo`:** prompts for the name, visibility and description, creates the repository from `Lucas-pin/42-project-template`, then offers to clone it. The template's README, Makefile and scripts are included.
-- **`make project`:** creates a personal or organization-owned Projects v2 board and offers to link it to the current repository. You need permission to create the board; `gh` requires the board and repository to have the same owner when linking. A failed link does not undo board creation.
+- **`make project`:** selects a repository, creates a Projects v2 project under its user or organization and links it automatically. Choose the initial view: **Board** (default), **Table** or **Roadmap**. You need permission to create and link the project; if linking or setting the view fails, the project is not deleted.
+- **`make view-project`:** choose a user or organization (defaults to your account), select a project with the arrow keys and Enter, and add a named Board, Table or Roadmap view. Press `q` to cancel. The menu shows up to 1,000 open projects; you can also enter a project number manually. Without an interactive terminal, select the menu position, not the GitHub project number. Existing views remain unchanged.
+
+Each layout presents the same project items differently:
+
+- **Board:** kanban-style columns, useful for tracking status.
+- **Table:** a spreadsheet-like view of items and their fields.
+- **Roadmap:** a timeline for scheduling work with dates or iterations.
+
+You can change a view or add others later. Linking a repository makes the project accessible from its Projects tab; it does **not** automatically add the repository's issues or PRs as project items.
+
+Learn more in GitHub's documentation: [creating a project](https://docs.github.com/en/issues/planning-and-tracking-with-projects/creating-projects/creating-a-project), [changing view layouts](https://docs.github.com/en/issues/planning-and-tracking-with-projects/customizing-views-in-your-project/changing-the-layout-of-a-view), [linking a repository](https://docs.github.com/en/issues/planning-and-tracking-with-projects/managing-your-project/adding-your-project-to-a-repository), and [adding items](https://docs.github.com/en/issues/planning-and-tracking-with-projects/managing-items-in-your-project/adding-items-to-your-project).
 
 Projects require additional permissions. For a stored `gh` OAuth login, grant them with `gh auth refresh --scopes project` if needed. Environment tokens must be updated separately.
 
@@ -55,7 +69,9 @@ Projects require additional permissions. For a stored `gh` OAuth login, grant th
 
 - **`make issue`:** opens GitHub CLI's interactive flow, where you can select an issue template or start blank and add labels through the metadata prompt.
 - **`make branch`:** creates and switches to a branch locally; it does not require GitHub authentication or publish the branch.
-- **`make pr`:** prompts for the base branch and whether the PR should be a draft, then uses the PR template in GitHub CLI's interactive flow. `gh` may also prompt to push the current branch.
+- **`make pr`:** select the target repository and a relevant local clone, then choose the base branch and whether the PR should be a draft. GitHub CLI uses the PR template and may also prompt to push the current branch.
+
+The GitHub repository menu lists repositories accessible to the authenticated user and includes manual `OWNER/REPO` entry. Listing and validation failures stop the workflow; no changes are made before confirmation.
 
 GitHub CLI reads issue and PR templates from the repository on GitHub, so template changes must be available on its default branch.
 
@@ -67,7 +83,7 @@ GitHub CLI reads issue and PR templates from the repository on GitHub, so templa
 ## Where we're heading
 
 1. **Migrate to Python:** move workflows incrementally, keep the current commands and add focused tests.
-2. **Central repository selection:** choose a GitHub repository for remote workflows or a local clone for branches; confirm the target before changes.
+2. **Central repository selection:** implemented for issues, boards, PRs and local branches; extend it to the remaining workflows.
 3. **Guided project setup:** create and clone a repository, set up labels and optionally add a board.
 4. **Issue → branch → PR:** optionally create a linked remote branch, reuse or create a clone and prepare a PR referencing the issue. Ordinary branches remain local until pushed.
 5. **Status and collaboration:** list issues and PRs, inspect branch status, open resources and support assignments.
@@ -79,9 +95,10 @@ For a new clone in the linked-issue flow, the planned experience is to choose th
 
 Try a workflow, open an issue to share feedback, or submit a pull request. Small fixes, documentation improvements, tests and new ideas all help.
 
-The repository includes a simulated test for repository creation:
+Run the Python tests and the simulated repository creation test with:
 
 ```bash
+python3 -m unittest discover -s tests -p 'test_*.py'
 bash tests/new-repository.sh
 ```
 
