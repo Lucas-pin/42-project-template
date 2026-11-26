@@ -9,7 +9,7 @@ help:
 	@echo "make repo        -> create a new GitHub repository"
 	@echo "make project     -> create a GitHub Projects v2 board"
 	@echo "make view-project -> add a view to an existing GitHub project"
-	@echo "make issue       -> create an issue interactively"
+	@echo "make issue       -> create an issue and optionally link a project and branch"
 	@echo "make pr          -> create a pull request"
 	@echo "make branch      -> create and switch to a feature branch"
 	@echo "make labels      -> create a standard set of repository labels"

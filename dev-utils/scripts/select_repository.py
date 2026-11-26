@@ -110,12 +110,12 @@ def main() -> int:
         if remote:
             env["GH_REPO"] = remote
         script = {
-            "issue": "new-issue.sh",
+            "issue": "new_issue.py",
             "project": "new_project.py",
             "pr": "new-pull-request.sh",
             "branch": "new-branch.sh",
         }[action]
-        interpreter = sys.executable if action == "project" else "bash"
+        interpreter = sys.executable if action in {"issue", "project"} else "bash"
         subprocess.run([interpreter, str(SCRIPTS / script)], cwd=local, env=env, check=True)
     except (EOFError, KeyboardInterrupt):
         print("\nCanceled.", file=sys.stderr)

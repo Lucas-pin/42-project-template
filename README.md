@@ -14,7 +14,7 @@ Run `make` from this **central toolbox** to manage multiple projects. Issues and
 
 `make labels` still operates on the repository containing the Makefile. `make repo` creates a repository from this template, so the new repository also receives the toolbox files. Centralizing the remaining workflows and separating toolbox files from generated projects are planned.
 
-For local clones, the default search directory is `~/42-projects`. Set `PROJECTS_DIR` to change it, for example `export PROJECTS_DIR="$HOME/projects"`. At each prompt you can accept that directory or enter another existing directory. The menu lists its immediate Git repositories and offers manual path entry; it does not clone or create directories.
+For local clones, the default directory is `~/42-projects`. Set `PROJECTS_DIR` to change it, for example `export PROJECTS_DIR="$HOME/projects"`. Local repository selection requires an existing directory and lists its immediate Git repositories. The issue workflow can also create a new clone in the default or a custom directory.
 
 ### Get started
 
@@ -42,7 +42,7 @@ All workflows are **beta**. “Tested” below means focused automated tests wit
 | `make repo` | Create a repository from this template | Shell | Tested: simulated workflow |
 | `make project` | Select a GitHub repository and create a Projects board | Python | Tested: simulated workflow |
 | `make view-project` | Add a view to an existing project | Python | Tested: simulated workflow |
-| `make issue` | Select a GitHub repository and create an issue | Python / Shell | Tested: simulated workflow |
+| `make issue` | Create an issue and optionally add it to a project, create a branch and clone | Python | Tested: simulated workflow |
 | `make branch` | Select a local clone and create a branch | Python / Shell | Tested: local Git |
 | `make labels` | Create a standard set of labels | Python | Beta: limited testing |
 | `make pr` | Select a GitHub repository and local clone to create a PR | Python / Shell | Tested: simulated workflow |
@@ -67,7 +67,7 @@ Projects require additional permissions. For a stored `gh` OAuth login, grant th
 
 ### Issues, branches and pull requests
 
-- **`make issue`:** opens GitHub CLI's interactive flow, where you can select an issue template or start blank and add labels through the metadata prompt.
+- **`make issue`:** opens GitHub CLI's interactive flow, including templates and labels. After creating the issue, optionally add it to an open Project v2 linked to that repository. You can also create a named remote branch linked to the issue and optionally clone the repository with that branch checked out. Choose a clone directory and folder name; existing destinations are not overwritten. If a later step fails, the issue and any completed remote changes remain in GitHub.
 - **`make branch`:** creates and switches to a branch locally; it does not require GitHub authentication or publish the branch.
 - **`make pr`:** select the target repository and a relevant local clone, then choose the base branch and whether the PR should be a draft. GitHub CLI uses the PR template and may also prompt to push the current branch.
 
@@ -85,11 +85,9 @@ GitHub CLI reads issue and PR templates from the repository on GitHub, so templa
 1. **Migrate to Python:** move workflows incrementally, keep the current commands and add focused tests.
 2. **Central repository selection:** implemented for issues, boards, PRs and local branches; extend it to the remaining workflows.
 3. **Guided project setup:** create and clone a repository, set up labels and optionally add a board.
-4. **Issue → branch → PR:** optionally create a linked remote branch, reuse or create a clone and prepare a PR referencing the issue. Ordinary branches remain local until pushed.
+4. **Issue → branch → PR:** create a linked remote branch and optionally clone it; reuse an existing clone and prepare a PR referencing the issue in a future step. Ordinary branches remain local until pushed.
 5. **Status and collaboration:** list issues and PRs, inspect branch status, open resources and support assignments.
 6. **42 checks and automation:** offer optional Norminette, build and test checks, plus parameters for repeatable workflows.
-
-For a new clone in the linked-issue flow, the planned experience is to choose the configured default location or a custom path, name the clone folder and check out the branch.
 
 ## Contributing
 
